@@ -1,12 +1,15 @@
 import * as React from 'react';
 
-import { StyleSheet, View } from 'react-native';
+import { Dimensions, StyleSheet, View } from 'react-native';
 import { UvcCameraView } from 'react-native-uvc-camera';
+
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <UvcCameraView color="#32a852" style={styles.box} />
+      <UvcCameraView style={styles.box} />
     </View>
   );
 }
@@ -18,8 +21,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   box: {
-    width: 60,
-    height: 60,
-    marginVertical: 20,
+    width: windowWidth,
+    height: windowHeight,
   },
 });

@@ -6,15 +6,11 @@ import com.facebook.react.uimanager.SimpleViewManager
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.annotations.ReactProp
 
-class UvcCameraViewManager : SimpleViewManager<View>() {
+class UvcCameraViewManager : SimpleViewManager<CameraView>() {
   override fun getName() = "UvcCameraView"
 
-  override fun createViewInstance(reactContext: ThemedReactContext): View {
-    return View(reactContext)
+  override fun createViewInstance(reactContext: ThemedReactContext): CameraView {
+    return CameraView(reactContext)
   }
 
-  @ReactProp(name = "color")
-  fun setColor(view: View, color: String) {
-    view.setBackgroundColor(Color.parseColor(color))
-  }
 }
