@@ -33,6 +33,26 @@ class CameraView(context: Context) : FrameLayout(context), LifecycleOwner {
     get() = context as ReactContext
 
   init {
+    mCameraViewMain = AspectRatioSurfaceView(reactContext)
+    mCameraViewMain.layoutParams =
+      LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+    mCameraViewMain.setAspectRatio(DEFAULT_WIDTH, DEFAULT_HEIGHT)
+    mCameraViewMain.holder.addCallback(object : SurfaceHolder.Callback {
+      override fun surfaceCreated(holder: SurfaceHolder) {
+        Log.d(TAG, "surfaceCreated() called with: holder = $holder")
+        mCameraHelper?.addSurface(holder.surface, false)
+      }
+
+      override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
+      }
+
+      override fun surfaceDestroyed(holder: SurfaceHolder) {
+        Log.d(TAG, "surfaceDestroyed() called with: holder = $holder")
+        mCameraHelper?.removeSurface(holder.surface)
+      }
+    })
+    addView(mCameraViewMain)
+
     hostLifecycleState = Lifecycle.State.INITIALIZED
     lifecycleRegistry = LifecycleRegistry(this)
     reactContext.addLifecycleEventListener(object : LifecycleEventListener {
@@ -56,25 +76,6 @@ class CameraView(context: Context) : FrameLayout(context), LifecycleOwner {
       }
     })
 
-    mCameraViewMain = AspectRatioSurfaceView(reactContext)
-    mCameraViewMain.layoutParams =
-      LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
-    addView(mCameraViewMain)
-    mCameraViewMain.setAspectRatio(DEFAULT_WIDTH, DEFAULT_HEIGHT)
-    mCameraViewMain.holder.addCallback(object : SurfaceHolder.Callback {
-      override fun surfaceCreated(holder: SurfaceHolder) {
-        Log.d(TAG, "surfaceCreated() called with: holder = $holder")
-        mCameraHelper?.addSurface(holder.surface, false)
-      }
-
-      override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
-      }
-
-      override fun surfaceDestroyed(holder: SurfaceHolder) {
-        Log.d(TAG, "surfaceDestroyed() called with: holder = $holder")
-        mCameraHelper?.removeSurface(holder.surface)
-      }
-    })
   }
 
   private fun updateLifecycleState() {
