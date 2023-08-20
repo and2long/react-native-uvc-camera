@@ -5,16 +5,12 @@ import android.hardware.usb.UsbDevice
 import android.util.Log
 import android.view.SurfaceHolder
 import android.widget.FrameLayout
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LifecycleRegistry
-import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.ReactContext
 import com.herohan.uvcapp.CameraHelper
 import com.herohan.uvcapp.ICameraHelper
 import com.serenegiant.widget.AspectRatioSurfaceView
 
-class CameraView(context: Context) : FrameLayout(context), LifecycleOwner {
+class CameraView(context: Context) : FrameLayout(context) {
 
   companion object {
     private const val DEBUG = true
@@ -25,9 +21,6 @@ class CameraView(context: Context) : FrameLayout(context), LifecycleOwner {
 
   private var mCameraHelper: ICameraHelper? = null
   private val mCameraViewMain: AspectRatioSurfaceView
-  private val lifecycleRegistry: LifecycleRegistry
-  private var hostLifecycleState: Lifecycle.State
-  var isActive = true
 
   private val reactContext: ReactContext
     get() = context as ReactContext
@@ -40,7 +33,9 @@ class CameraView(context: Context) : FrameLayout(context), LifecycleOwner {
     mCameraViewMain.holder.addCallback(object : SurfaceHolder.Callback {
       override fun surfaceCreated(holder: SurfaceHolder) {
         Log.d(TAG, "surfaceCreated() called with: holder = $holder")
+        initCameraHelper()
         mCameraHelper?.addSurface(holder.surface, false)
+        mCameraHelper?.openCamera()
       }
 
       override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
@@ -49,52 +44,11 @@ class CameraView(context: Context) : FrameLayout(context), LifecycleOwner {
       override fun surfaceDestroyed(holder: SurfaceHolder) {
         Log.d(TAG, "surfaceDestroyed() called with: holder = $holder")
         mCameraHelper?.removeSurface(holder.surface)
+        clearCameraHelper()
       }
     })
     addView(mCameraViewMain)
 
-    hostLifecycleState = Lifecycle.State.INITIALIZED
-    lifecycleRegistry = LifecycleRegistry(this)
-    reactContext.addLifecycleEventListener(object : LifecycleEventListener {
-
-      override fun onHostResume() {
-        hostLifecycleState = Lifecycle.State.RESUMED
-        updateLifecycleState()
-        initCameraHelper()
-      }
-
-      override fun onHostPause() {
-        hostLifecycleState = Lifecycle.State.CREATED
-        updateLifecycleState()
-        clearCameraHelper()
-      }
-
-      override fun onHostDestroy() {
-        hostLifecycleState = Lifecycle.State.DESTROYED
-        updateLifecycleState()
-        reactContext.removeLifecycleEventListener(this)
-      }
-    })
-
-  }
-
-  private fun updateLifecycleState() {
-    val lifecycleBefore = lifecycleRegistry.currentState
-    if (hostLifecycleState == Lifecycle.State.RESUMED) {
-      // Host Lifecycle (Activity) is currently active (RESUMED), so we narrow it down to the view's lifecycle
-      if (isActive && isAttachedToWindow) {
-        lifecycleRegistry.currentState = Lifecycle.State.RESUMED
-      } else {
-        lifecycleRegistry.currentState = Lifecycle.State.CREATED
-      }
-    } else {
-      // Host Lifecycle (Activity) is currently inactive (STARTED or DESTROYED), so that overrules our view's lifecycle
-      lifecycleRegistry.currentState = hostLifecycleState
-    }
-    Log.d(
-      TAG,
-      "Lifecycle went from ${lifecycleBefore.name} -> ${lifecycleRegistry.currentState.name} (isActive: $isActive | isAttachedToWindow: $isAttachedToWindow)"
-    )
   }
 
   private val mStateListener: ICameraHelper.StateCallback = object : ICameraHelper.StateCallback {
@@ -155,9 +109,5 @@ class CameraView(context: Context) : FrameLayout(context), LifecycleOwner {
     if (DEBUG) Log.d(TAG, "clearCameraHelper:")
     mCameraHelper?.release()
     mCameraHelper = null
-  }
-
-  override fun getLifecycle(): Lifecycle {
-    return lifecycleRegistry
   }
 }
