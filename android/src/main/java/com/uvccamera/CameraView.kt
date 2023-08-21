@@ -112,4 +112,16 @@ class CameraView(context: Context) : FrameLayout(context) {
     mCameraHelper?.release()
     mCameraHelper = null
   }
+
+  fun openCamera() {
+    mCameraHelper?.run {
+      if (deviceList != null && deviceList.size > 0) {
+        selectDevice(deviceList[0])
+      }
+    }
+  }
+
+  fun closeCamera() {
+    mCameraHelper?.closeCamera()
+  }
 }
