@@ -6,12 +6,12 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ViewManager
 
 
-class UvcCameraPackage : ReactPackage {
+class UVCCameraPackage : ReactPackage {
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
-    return listOf(UvcCameraViewModule(reactContext))
+    return listOf(UVCCameraViewModule(reactContext))
   }
 
   override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
-    return listOf(UvcCameraViewManager())
+    return listOf(UVCCameraViewManager())
   }
 }

@@ -5,25 +5,25 @@ import {
   requireNativeComponent,
   type NativeMethods,
 } from 'react-native';
-import type { UvcCameraProps } from './UvcCameraProps';
+import type { UVCCameraProps } from './UVCCameraProps';
 
-const CameraModule = NativeModules.UvcCameraView;
+const CameraModule = NativeModules.UVCCameraView;
 if (CameraModule == null) {
-  console.error("Camera: Native Module 'UvcCameraView' was null!");
+  console.error("Camera: Native Module 'UVCCameraView' was null!");
 }
 
-const ComponentName = 'UvcCameraView';
+const ComponentName = 'UVCCameraView';
 
-type NativeUvcCameraViewProps = UvcCameraProps;
-const NativeUvcCameraView =
-  requireNativeComponent<NativeUvcCameraViewProps>(ComponentName);
-type RefType = React.Component<NativeUvcCameraViewProps> &
+type NativeUVCCameraViewProps = UVCCameraProps;
+const NativeUVCCameraView =
+  requireNativeComponent<NativeUVCCameraViewProps>(ComponentName);
+type RefType = React.Component<NativeUVCCameraViewProps> &
   Readonly<NativeMethods>;
 
-export class UvcCamera extends React.PureComponent<UvcCameraProps> {
+export class UVCCamera extends React.PureComponent<UVCCameraProps> {
   private readonly ref: React.RefObject<RefType>;
 
-  constructor(props: UvcCameraProps) {
+  constructor(props: UVCCameraProps) {
     super(props);
     this.ref = React.createRef<RefType>();
   }
@@ -33,7 +33,7 @@ export class UvcCamera extends React.PureComponent<UvcCameraProps> {
   }
 
   public render(): React.ReactNode {
-    return <NativeUvcCameraView {...this.props} ref={this.ref} />;
+    return <NativeUVCCameraView {...this.props} ref={this.ref} />;
   }
 
   public async openCamera(): Promise<void> {

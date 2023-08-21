@@ -10,11 +10,11 @@ import com.herohan.uvcapp.CameraHelper
 import com.herohan.uvcapp.ICameraHelper
 import com.serenegiant.widget.AspectRatioSurfaceView
 
-class CameraView(context: Context) : FrameLayout(context) {
+const val TAG = "UVCCameraView"
+class UVCCameraView(context: Context) : FrameLayout(context) {
 
   companion object {
     private const val DEBUG = true
-    private val TAG = CameraView::class.java.simpleName
     private const val DEFAULT_WIDTH = 640
     private const val DEFAULT_HEIGHT = 480
   }

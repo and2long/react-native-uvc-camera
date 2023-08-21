@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { Button, Dimensions, StyleSheet, View } from 'react-native';
-import { UvcCamera } from 'react-native-uvc-camera';
+import { UVCCamera } from 'react-native-uvc-camera';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useRef } from 'react';
@@ -36,11 +36,11 @@ const HomePage = () => {
 };
 
 const CameraPage = () => {
-  const camera = useRef<UvcCamera>(null);
+  const camera = useRef<UVCCamera>(null);
 
   return (
     <View style={styles.root}>
-      <UvcCamera style={styles.cameraView} ref={camera} />
+      <UVCCamera style={styles.cameraView} ref={camera} />
       <View style={styles.controlBar}>
         <Button
           title="Open Camera"

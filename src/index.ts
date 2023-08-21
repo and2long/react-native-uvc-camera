@@ -1,2 +1,2 @@
-export * from './UvcCameraProps';
-export * from './UvcCamera';
+export * from './UVCCameraProps';
+export * from './UVCCamera';

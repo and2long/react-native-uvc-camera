@@ -6,19 +6,16 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.uimanager.UIManagerHelper
 
-class UvcCameraViewModule(reactContext: ReactApplicationContext?) :
+class UVCCameraViewModule(reactContext: ReactApplicationContext?) :
   ReactContextBaseJavaModule(reactContext) {
-  companion object {
-    const val TAG = "UvcCameraView"
-  }
 
-  override fun getName() = "UvcCameraView"
+  override fun getName() = TAG
 
-  private fun findCameraView(viewId: Int): CameraView {
+  private fun findCameraView(viewId: Int): UVCCameraView {
     Log.d(TAG, "Finding view $viewId...")
     val view = if (reactApplicationContext != null) {
       UIManagerHelper.getUIManager(reactApplicationContext, viewId)
-        ?.resolveView(viewId) as CameraView?
+        ?.resolveView(viewId) as UVCCameraView?
     } else null
     Log.d(
       TAG,
