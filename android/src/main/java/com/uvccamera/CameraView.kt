@@ -64,15 +64,16 @@ class CameraView(context: Context) : FrameLayout(context) {
 
     override fun onCameraOpen(device: UsbDevice) {
       if (DEBUG) Log.v(TAG, "onCameraOpen:")
-      mCameraHelper?.startPreview()
-      val size = mCameraHelper!!.previewSize
-      if (size != null) {
-        val width = size.width
-        val height = size.height
-        //auto aspect ratio
-        mCameraViewMain.setAspectRatio(width, height)
+      mCameraHelper?.run {
+        startPreview()
+        if (previewSize != null) {
+          val width = previewSize.width
+          val height = previewSize.height
+          //auto aspect ratio
+          mCameraViewMain.setAspectRatio(width, height)
+        }
+        addSurface(mCameraViewMain.holder.surface, false)
       }
-      mCameraHelper!!.addSurface(mCameraViewMain.holder.surface, false)
     }
 
     override fun onCameraClose(device: UsbDevice) {
@@ -101,8 +102,9 @@ class CameraView(context: Context) : FrameLayout(context) {
 
   private fun initCameraHelper() {
     if (DEBUG) Log.d(TAG, "initCameraHelper:")
-    mCameraHelper = CameraHelper()
-    mCameraHelper!!.setStateCallback(mStateListener)
+    mCameraHelper = CameraHelper().apply {
+      setStateCallback(mStateListener)
+    }
   }
 
   private fun clearCameraHelper() {
