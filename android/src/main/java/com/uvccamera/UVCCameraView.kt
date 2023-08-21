@@ -15,8 +15,8 @@ class UVCCameraView(context: Context) : FrameLayout(context) {
 
   companion object {
     private const val DEBUG = true
-    private const val DEFAULT_WIDTH = 640
-    private const val DEFAULT_HEIGHT = 480
+    private const val DEFAULT_WIDTH = 720
+    private const val DEFAULT_HEIGHT = 1280
   }
 
   private var mCameraHelper: ICameraHelper? = null
@@ -104,6 +104,7 @@ class UVCCameraView(context: Context) : FrameLayout(context) {
     if (DEBUG) Log.d(TAG, "initCameraHelper:")
     mCameraHelper = CameraHelper().apply {
       setStateCallback(mStateListener)
+      previewConfig.rotation = 90
     }
   }
 
