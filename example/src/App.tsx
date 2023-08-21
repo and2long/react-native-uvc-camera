@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Button, Dimensions, StyleSheet, View } from 'react-native';
+import { Button, Dimensions, Image, StyleSheet, View } from 'react-native';
 import { UVCCamera } from 'react-native-uvc-camera';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -37,6 +37,17 @@ const HomePage = () => {
 
 const CameraPage = () => {
   const camera = useRef<UVCCamera>(null);
+  const [picPath, setPicPath] = React.useState<string>();
+
+  const takePhoto = async () => {
+    try {
+      const result = await camera.current?.takePhoto();
+      setPicPath(result);
+      console.log('result', result);
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
 
   return (
     <View style={styles.root}>
@@ -50,7 +61,15 @@ const CameraPage = () => {
           title="Close Camera"
           onPress={() => camera.current?.closeCamera()}
         />
+        <Button title="Take Photo" onPress={takePhoto} />
       </View>
+      {picPath && (
+        <Image
+          source={{ uri: `file:///${picPath}` }}
+          style={styles.pic}
+          resizeMode="contain"
+        />
+      )}
     </View>
   );
 };
@@ -66,9 +85,16 @@ const styles = StyleSheet.create({
     height: windowHeight,
   },
   controlBar: {
-    flexDirection: 'row',
     position: 'absolute',
-    bottom: 50,
+    top: 10,
     gap: 10,
+  },
+  pic: {
+    position: 'absolute',
+    backgroundColor: '#000',
+    width: 100,
+    height: 100,
+    bottom: 20,
+    right: 20,
   },
 });

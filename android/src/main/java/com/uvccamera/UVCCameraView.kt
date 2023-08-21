@@ -11,6 +11,7 @@ import com.herohan.uvcapp.ICameraHelper
 import com.serenegiant.widget.AspectRatioSurfaceView
 
 const val TAG = "UVCCameraView"
+
 class UVCCameraView(context: Context) : FrameLayout(context) {
 
   companion object {
@@ -19,7 +20,7 @@ class UVCCameraView(context: Context) : FrameLayout(context) {
     private const val DEFAULT_HEIGHT = 1280
   }
 
-  private var mCameraHelper: ICameraHelper? = null
+  var mCameraHelper: ICameraHelper? = null
   private val mCameraViewMain: AspectRatioSurfaceView
 
   private val reactContext: ReactContext

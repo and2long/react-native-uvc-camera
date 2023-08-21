@@ -43,4 +43,8 @@ export class UVCCamera extends React.PureComponent<UVCCameraProps> {
   public async closeCamera(): Promise<void> {
     await CameraModule.closeCamera(this.handle);
   }
+
+  public async takePhoto(): Promise<string> {
+    return await CameraModule.takePhoto(this.handle);
+  }
 }

@@ -30,3 +30,6 @@ class ViewNotFoundError(viewId: Int) : CameraError(
   "view-not-found",
   "The given view (ID $viewId) was not found in the view manager."
 )
+
+class UnknownCameraError(cause: Throwable?) :
+  CameraError("unknown", "unknown", cause?.message ?: "An unknown camera error occured.", cause)

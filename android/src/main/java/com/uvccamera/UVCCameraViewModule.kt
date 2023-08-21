@@ -1,13 +1,19 @@
 package com.uvccamera
 
 import android.util.Log
+import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.uimanager.UIManagerHelper
+import com.uvccamera.utils.withPromise
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class UVCCameraViewModule(reactContext: ReactApplicationContext?) :
   ReactContextBaseJavaModule(reactContext) {
+  private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
   override fun getName() = TAG
 
@@ -36,4 +42,13 @@ class UVCCameraViewModule(reactContext: ReactApplicationContext?) :
     view.closeCamera()
   }
 
+  @ReactMethod
+  fun takePhoto(viewTag: Int, promise: Promise) {
+    coroutineScope.launch {
+      withPromise(promise) {
+        val view = findCameraView(viewTag)
+        view.takePhoto()
+      }
+    }
+  }
 }
