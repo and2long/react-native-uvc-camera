@@ -1,12 +1,6 @@
 # react-native-uvc-camera
 
-UVC Camera for RN
-
-**Only for Android**
-
-**Only for Android**
-
-**Only for Android**
+UVC Camera for RN, **only for Android!**
 
 ## Installation
 
@@ -16,12 +10,16 @@ npm install @and2long/react-native-uvc-camera
 
 ## Usage
 
-```js
+```ts
 import { UVCCamera } from "@and2long/react-native-uvc-camera";
 
 // ...
+const camera = useRef<UVCCamera>(null);
 
-<UVCCamera />
+<UVCCamera ref={camera} width={windowWidth} height={windowHeight} />
+
+// take photo
+const result = await camera.current?.takePhoto();
 ```
 
 ## Contributing

@@ -51,7 +51,7 @@ const CameraPage = () => {
 
   return (
     <View style={styles.root}>
-      <UVCCamera style={styles.cameraView} ref={camera} />
+      <UVCCamera ref={camera} width={windowWidth} height={windowHeight} />
       <View style={styles.controlBar}>
         <Button
           title="Open Camera"
@@ -79,10 +79,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  cameraView: {
-    width: windowWidth,
-    height: windowHeight,
   },
   controlBar: {
     position: 'absolute',
