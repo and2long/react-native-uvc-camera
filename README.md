@@ -16,10 +16,17 @@ import { UVCCamera } from "@and2long/react-native-uvc-camera";
 // ...
 const camera = useRef<UVCCamera>(null);
 
-<UVCCamera ref={camera} width={windowWidth} height={windowHeight} />
+<UVCCamera ref={camera} style={styles.cameraView} />
 
 // take photo
 const result = await camera.current?.takePhoto();
+
+const styles = StyleSheet.create({
+  cameraView: {
+    width: 200,
+    height: 200,
+  },
+});
 ```
 
 ## Contributing
