@@ -30,13 +30,12 @@ class UVCCameraView(context: Context) : FrameLayout(context) {
     mCameraViewMain = AspectRatioSurfaceView(reactContext)
     mCameraViewMain.layoutParams =
       LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
-    mCameraViewMain.setAspectRatio(DEFAULT_WIDTH, DEFAULT_HEIGHT)
+//    mCameraViewMain.setAspectRatio(DEFAULT_WIDTH, DEFAULT_HEIGHT)
     mCameraViewMain.holder.addCallback(object : SurfaceHolder.Callback {
       override fun surfaceCreated(holder: SurfaceHolder) {
         Log.d(TAG, "surfaceCreated() called with: holder = $holder")
-        initCameraHelper()
         mCameraHelper?.addSurface(holder.surface, false)
-        mCameraHelper?.openCamera()
+        initCameraHelper()
       }
 
       override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
@@ -67,12 +66,6 @@ class UVCCameraView(context: Context) : FrameLayout(context) {
       if (DEBUG) Log.v(TAG, "onCameraOpen:")
       mCameraHelper?.run {
         startPreview()
-        if (previewSize != null) {
-          val width = previewSize.width
-          val height = previewSize.height
-          //auto aspect ratio
-          mCameraViewMain.setAspectRatio(width, height)
-        }
         addSurface(mCameraViewMain.holder.surface, false)
       }
     }
@@ -94,7 +87,6 @@ class UVCCameraView(context: Context) : FrameLayout(context) {
       if (DEBUG) Log.v(TAG, "onCancel:")
     }
   }
-
 
   private fun selectDevice(device: UsbDevice) {
     if (DEBUG) Log.v(TAG, "selectDevice:device=" + device.deviceName)
