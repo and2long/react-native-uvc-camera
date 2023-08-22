@@ -8,6 +8,7 @@ import android.widget.FrameLayout
 import com.facebook.react.bridge.ReactContext
 import com.herohan.uvcapp.CameraHelper
 import com.herohan.uvcapp.ICameraHelper
+import com.serenegiant.usb.Size
 import com.serenegiant.widget.AspectRatioSurfaceView
 
 const val TAG = "UVCCameraView"
@@ -16,8 +17,6 @@ class UVCCameraView(context: Context) : FrameLayout(context) {
 
   companion object {
     private const val DEBUG = true
-    private const val DEFAULT_WIDTH = 720
-    private const val DEFAULT_HEIGHT = 1280
   }
 
   var mCameraHelper: ICameraHelper? = null
@@ -30,7 +29,6 @@ class UVCCameraView(context: Context) : FrameLayout(context) {
     mCameraViewMain = AspectRatioSurfaceView(reactContext)
     mCameraViewMain.layoutParams =
       LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
-//    mCameraViewMain.setAspectRatio(DEFAULT_WIDTH, DEFAULT_HEIGHT)
     mCameraViewMain.holder.addCallback(object : SurfaceHolder.Callback {
       override fun surfaceCreated(holder: SurfaceHolder) {
         Log.d(TAG, "surfaceCreated() called with: holder = $holder")
@@ -65,7 +63,18 @@ class UVCCameraView(context: Context) : FrameLayout(context) {
     override fun onCameraOpen(device: UsbDevice) {
       if (DEBUG) Log.v(TAG, "onCameraOpen:")
       mCameraHelper?.run {
+        val portraitSizeList = ArrayList<Size>()
+        for (size in supportedSizeList) {
+          if (size.width < size.height) {
+            portraitSizeList.add(size)
+          }
+        }
+        Log.d(TAG, "portraitSizeList: $portraitSizeList")
+        val size = portraitSizeList[0]
+        Log.d(TAG, "previewSize: $size")
+        previewSize = size
         startPreview()
+        mCameraViewMain.setAspectRatio(previewSize.width, previewSize.height)
         addSurface(mCameraViewMain.holder.surface, false)
       }
     }
@@ -97,7 +106,6 @@ class UVCCameraView(context: Context) : FrameLayout(context) {
     if (DEBUG) Log.d(TAG, "initCameraHelper:")
     mCameraHelper = CameraHelper().apply {
       setStateCallback(mStateListener)
-      previewConfig.rotation = 90
     }
   }
 
