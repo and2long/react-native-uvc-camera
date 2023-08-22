@@ -4,7 +4,7 @@ import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useRef } from 'react';
 import { Button, Dimensions, Image, StyleSheet, View } from 'react-native';
-import { UVCCamera } from 'src/UVCCamera';
+import { UVCCamera } from '../../src/UVCCamera';
 
 const Stack = createNativeStackNavigator();
 
