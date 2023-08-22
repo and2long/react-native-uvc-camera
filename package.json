@@ -1,6 +1,6 @@
 {
   "name": "@and2long/react-native-uvc-camera",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "UVC Camera for RN",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -40,7 +40,7 @@
   },
   "keywords": [
     "react-native",
-    "ios",
+    "uvc-camera",
     "android"
   ],
   "repository": "https://github.com/and2long/react-native-uvc-camera",

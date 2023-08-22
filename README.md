@@ -1,6 +1,11 @@
 # react-native-uvc-camera
 
-UVC Camera for RN, **only for Android!**
+UVC Camera component for Reat Native.
+
+**Works only on Android!**
+
+
+This is a wrapper for the [UVCAndroid](https://github.com/shiyinghan/UVCAndroid) library.
 
 ## Installation
 
@@ -9,7 +14,6 @@ npm install @and2long/react-native-uvc-camera
 ```
 
 ## Usage
-
 ```ts
 import { UVCCamera } from "@and2long/react-native-uvc-camera";
 
@@ -18,15 +22,30 @@ const camera = useRef<UVCCamera>(null);
 
 <UVCCamera ref={camera} style={styles.cameraView} />
 
-// take photo
-const result = await camera.current?.takePhoto();
-
 const styles = StyleSheet.create({
   cameraView: {
     width: 200,
     height: 200,
   },
 });
+```
+
+### Take photo
+```
+const result = await camera.current?.takePhoto();
+```
+
+## R8 / ProGuard
+If you are using R8 the shrinking and obfuscation rules are included automatically.
+
+ProGuard users must manually add the below options.
+
+```
+-keep class com.herohan.uvcapp.** { *; }
+-keep class com.serenegiant.usb.** { *; }
+-keepclassmembers class * implements com.serenegiant.usb.IButtonCallback {*;}
+-keepclassmembers class * implements com.serenegiant.usb.IFrameCallback {*;}
+-keepclassmembers class * implements com.serenegiant.usb.IStatusCallback {*;}
 ```
 
 ## Contributing
