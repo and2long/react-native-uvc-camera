@@ -1,5 +1,5 @@
 {
-  "name": "react-native-uvc-camera",
+  "name": "@and2long/react-native-uvc-camera",
   "version": "0.1.0",
   "description": "UVC Camera for RN",
   "main": "lib/commonjs/index",

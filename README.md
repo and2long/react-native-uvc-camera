@@ -2,20 +2,26 @@
 
 UVC Camera for RN
 
+**Only for Android**
+
+**Only for Android**
+
+**Only for Android**
+
 ## Installation
 
 ```sh
-npm install react-native-uvc-camera
+npm install @and2long/react-native-uvc-camera
 ```
 
 ## Usage
 
 ```js
-import { UvcCameraView } from "react-native-uvc-camera";
+import { UVCCamera } from "@and2long/react-native-uvc-camera";
 
 // ...
 
-<UvcCameraView color="tomato" />
+<UVCCamera />
 ```
 
 ## Contributing
