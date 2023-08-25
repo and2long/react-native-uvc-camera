@@ -2,6 +2,8 @@ package com.uvccamera
 
 import android.os.Environment
 import android.util.Log
+import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.WritableMap
 import com.herohan.uvcapp.ImageCapture
 import com.serenegiant.utils.FileUtils
 import com.serenegiant.utils.UriHelper
@@ -27,11 +29,15 @@ suspend inline fun UVCCameraView.takePicture() = suspendCoroutine { cont ->
   )
 }
 
-suspend fun UVCCameraView.takePhoto(): String = coroutineScope {
+suspend fun UVCCameraView.takePhoto(): WritableMap = coroutineScope {
   val startFunc = System.nanoTime()
   val pic = takePicture()
   Log.d(TAG, "Finished taking photo!")
   val endFunc = System.nanoTime()
   Log.d(TAG, "Finished function execution in ${(endFunc - startFunc) / 1_000_000}ms")
-  return@coroutineScope pic
+
+  val map = Arguments.createMap()
+  map.putString("path", pic)
+
+  return@coroutineScope map
 }

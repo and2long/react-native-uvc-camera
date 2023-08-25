@@ -6,6 +6,7 @@ import {
   type NativeMethods,
 } from 'react-native';
 import type { UVCCameraProps } from './UVCCameraProps';
+import type { PhotoFile } from './PhotoFile';
 
 const CameraModule = NativeModules.UVCCameraView;
 if (CameraModule == null) {
@@ -44,7 +45,7 @@ export class UVCCamera extends React.PureComponent<UVCCameraProps> {
     await CameraModule.closeCamera(this.handle);
   }
 
-  public async takePhoto(): Promise<string> {
+  public async takePhoto(): Promise<PhotoFile> {
     return await CameraModule.takePhoto(this.handle);
   }
 }

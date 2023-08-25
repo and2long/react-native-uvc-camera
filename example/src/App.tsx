@@ -41,9 +41,9 @@ const CameraPage = () => {
 
   const takePhoto = async () => {
     try {
-      const result = await camera.current?.takePhoto();
-      setPicPath(result);
-      console.log('result', result);
+      const photo = await camera.current!!.takePhoto();
+      setPicPath(photo.path);
+      console.log('photo', photo);
     } catch (error) {
       console.log('error', error);
     }

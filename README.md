@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
 
 ### Take photo
 ```
-const result = await camera.current?.takePhoto();
+const photo = await camera.current?.takePhoto();
 ```
 
 ## R8 / ProGuard
