@@ -4,8 +4,12 @@ import {
   findNodeHandle,
   requireNativeComponent,
   type NativeMethods,
+  type NativeSyntheticEvent,
 } from 'react-native';
-import type { UVCCameraProps } from './UVCCameraProps';
+import type {
+  FrameProcessorPerformanceSuggestion,
+  UVCCameraProps,
+} from './UVCCameraProps';
 import type { PhotoFile } from './PhotoFile';
 
 const CameraModule = NativeModules.UVCCameraView;
@@ -15,7 +19,15 @@ if (CameraModule == null) {
 
 const ComponentName = 'UVCCameraView';
 
-type NativeUVCCameraViewProps = UVCCameraProps;
+type NativeUVCCameraViewProps = Omit<
+  UVCCameraProps,
+  'onFrameProcessorPerformanceSuggestionAvailable'
+> & {
+  onFrameProcessorPerformanceSuggestionAvailable?: (
+    event: NativeSyntheticEvent<FrameProcessorPerformanceSuggestion>
+  ) => void;
+  enableFrameProcessor: boolean;
+};
 const NativeUVCCameraView =
   requireNativeComponent<NativeUVCCameraViewProps>(ComponentName);
 type RefType = React.Component<NativeUVCCameraViewProps> &
@@ -27,6 +39,8 @@ export class UVCCamera extends React.PureComponent<UVCCameraProps> {
   constructor(props: UVCCameraProps) {
     super(props);
     this.ref = React.createRef<RefType>();
+    this.onFrameProcessorPerformanceSuggestionAvailable =
+      this.onFrameProcessorPerformanceSuggestionAvailable.bind(this);
   }
 
   private get handle(): number | null {
@@ -34,7 +48,26 @@ export class UVCCamera extends React.PureComponent<UVCCameraProps> {
   }
 
   public render(): React.ReactNode {
-    return <NativeUVCCameraView {...this.props} ref={this.ref} />;
+    const { frameProcessor, ...props } = this.props;
+    return (
+      <NativeUVCCameraView
+        {...props}
+        ref={this.ref}
+        onFrameProcessorPerformanceSuggestionAvailable={
+          this.onFrameProcessorPerformanceSuggestionAvailable
+        }
+        enableFrameProcessor={frameProcessor != null}
+      />
+    );
+  }
+
+  private onFrameProcessorPerformanceSuggestionAvailable(
+    event: NativeSyntheticEvent<FrameProcessorPerformanceSuggestion>
+  ): void {
+    if (this.props.onFrameProcessorPerformanceSuggestionAvailable != null)
+      this.props.onFrameProcessorPerformanceSuggestionAvailable(
+        event.nativeEvent
+      );
   }
 
   public async openCamera(): Promise<void> {
