@@ -43,13 +43,13 @@
     "uvc-camera",
     "android"
   ],
-  "repository": "https://github.com/and2long/react-native-uvc-camera",
-  "author": "and2long <and2long@gmail.com> (https://github.com/and2long)",
+  "repository": "https://github.com/jaswinda/react-native-uvc-camera",
+  "author": "jaswinda <singhjassi2624@gmail.com> (https://github.com/jaswinda)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/and2long/react-native-uvc-camera/issues"
+    "url": "https://github.com/jaswinda/react-native-uvc-camera/issues"
   },
-  "homepage": "https://github.com/and2long/react-native-uvc-camera#readme",
+  "homepage": "https://github.com/jaswinda/react-native-uvc-camera#readme",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
