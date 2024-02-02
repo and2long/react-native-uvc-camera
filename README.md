@@ -10,12 +10,12 @@ This is a wrapper for the [UVCAndroid](https://github.com/shiyinghan/UVCAndroid)
 ## Installation
 
 ```sh
-npm install @and2long/react-native-uvc-camera
+npm install @jaswinda/react-native-uvc-camera
 ```
 
 ## Usage
 ```ts
-import { UVCCamera } from "@and2long/react-native-uvc-camera";
+import { UVCCamera } from "@jaswinda/react-native-uvc-camera";
 
 // ...
 const camera = useRef<UVCCamera>(null);
