@@ -65,9 +65,9 @@ class UVCCameraView(context: Context) : FrameLayout(context) {
       mCameraHelper?.run {
         val portraitSizeList = ArrayList<Size>()
         for (size in supportedSizeList) {
-          if (size.width < size.height) {
+          // if (size.width < size.height) {
             portraitSizeList.add(size)
-          }
+          // }
         }
         Log.d(TAG, "portraitSizeList: $portraitSizeList")
         val size = portraitSizeList[0]
