@@ -48,4 +48,7 @@ export class UVCCamera extends React.PureComponent<UVCCameraProps> {
   public async takePhoto(): Promise<PhotoFile> {
     return await CameraModule.takePhoto(this.handle);
   }
+  public async updateAspectRatio(width: number, height: number): Promise<void> {
+    await CameraModule.updateAspectRatio(this.handle, width, height);
+  }
 }
