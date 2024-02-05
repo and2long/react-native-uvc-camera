@@ -10,6 +10,7 @@ import com.herohan.uvcapp.CameraHelper
 import com.herohan.uvcapp.ICameraHelper
 import com.serenegiant.usb.Size
 import com.serenegiant.widget.AspectRatioSurfaceView
+import android.widget.Toast;
 
 const val TAG = "UVCCameraView"
 
@@ -118,9 +119,18 @@ class UVCCameraView(context: Context) : FrameLayout(context) {
   fun openCamera() {
     mCameraHelper?.run {
       if (deviceList != null && deviceList.size > 0) {
-        selectDevice(deviceList[0])
+        if( deviceList.size > 1) {
+          selectDevice(deviceList[1])
+        } else {
+          selectDevice(deviceList[0])
+        }
       }
     }
+  }
+
+  fun updateAspectRatio(width: Int, height: Int) {
+    Toast.makeText(reactContext, "setAspectRatio: $width, $height", Toast.LENGTH_SHORT).show()
+    mCameraViewMain.setAspectRatio(width, height)
   }
 
   fun closeCamera() {

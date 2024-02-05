@@ -43,6 +43,12 @@ class UVCCameraViewModule(reactContext: ReactApplicationContext?) :
   }
 
   @ReactMethod
+  fun updateAspectRatio(viewTag: Int, width: Int, height: Int) {
+    val view = findCameraView(viewTag)
+    view.updateAspectRatio(width, height)
+  }
+
+  @ReactMethod
   fun takePhoto(viewTag: Int, promise: Promise) {
     coroutineScope.launch {
       withPromise(promise) {
