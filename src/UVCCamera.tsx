@@ -51,4 +51,24 @@ export class UVCCamera extends React.PureComponent<UVCCameraProps> {
   public async updateAspectRatio(width: number, height: number): Promise<void> {
     await CameraModule.updateAspectRatio(this.handle, width, height);
   }
+
+  public async setCameraBright(value: number): Promise<void> {
+    await CameraModule.setCameraBright(this.handle, value);
+  }
+
+  public async setCameraContrast(value: number): Promise<void> {
+    await CameraModule.setContast(this.handle, value);
+  }
+
+  public async setCameraSaturation(value: number): Promise<void> {
+    await CameraModule.setSaturation(this.handle, value);
+  }
+
+  public async setCameraSharpness(value: number): Promise<void> {
+    await CameraModule.setSharpness(this.handle, value);
+  }
+
+  public async setCameraZoom(value: number): Promise<void> {
+    await CameraModule.setZoom(this.handle, value);
+  }
 }

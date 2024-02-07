@@ -49,6 +49,19 @@ class UVCCameraViewModule(reactContext: ReactApplicationContext?) :
   }
 
   @ReactMethod
+  fun setCameraBright(viewTag: Int, brightness: Int) {
+    val view = findCameraView(viewTag)
+    view.setCameraBright(brightness)
+  }
+
+  @ReactMethod
+  fun setZoom(viewTag: Int, zoom: Int) {
+    val view = findCameraView(viewTag)
+    view.setZoom(zoom)
+  }
+
+
+  @ReactMethod
   fun takePhoto(viewTag: Int, promise: Promise) {
     coroutineScope.launch {
       withPromise(promise) {
