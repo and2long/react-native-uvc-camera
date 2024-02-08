@@ -1,6 +1,6 @@
 {
   "name": "@jaswinda/react-native-uvc-camera",
-  "version": "0.1.6",
+  "version": "0.1.8",
   "description": "UVC Camera for RN",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",

@@ -81,12 +81,12 @@ class UVCCameraView(context: Context) : FrameLayout(context) {
         val size = portraitSizeList[0]
         //get the values from SharedPreferences
         val sharedPref = reactContext.getSharedPreferences("camera", Context.MODE_PRIVATE)
-        val width = sharedPref.getInt("width", 2048)
-        val height = sharedPref.getInt("height", 1536)
+        val width = sharedPref.getInt("width", 2592)
+        val height = sharedPref.getInt("height", 1944)
         size.width = width;
         size.height = height;
         size.fps = 25;
-        Toast.makeText(reactContext, "rotate camera error: ${size.width}x${size.height},type:${size.type}, fps:${size.fps}", Toast.LENGTH_SHORT).show()
+        Toast.makeText(reactContext, "${size.width}x${size.height},type:${size.type}, fps:${size.fps}", Toast.LENGTH_SHORT).show()
         Log.d(TAG, "previewSize: $size")
         previewSize = size
         mCameraViewMain.setAspectRatio(size.width, size.height)
