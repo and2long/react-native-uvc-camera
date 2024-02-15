@@ -1,19 +1,25 @@
 package com.uvccamera
 
+import android.app.AlertDialog
 import android.content.Context
+import android.graphics.Bitmap
 import android.hardware.usb.UsbDevice
+import android.os.Handler
+import android.os.Message
 import android.util.Log
 import android.view.SurfaceHolder
+import android.view.TextureView
 import android.widget.FrameLayout
+import android.widget.Toast
 import com.facebook.react.bridge.ReactContext
 import com.herohan.uvcapp.CameraHelper
 import com.herohan.uvcapp.ICameraHelper
-import com.serenegiant.usb.Size
-import com.serenegiant.usb.UVCCamera;
-import com.serenegiant.widget.AspectRatioSurfaceView
-import android.widget.Toast;
-import com.serenegiant.usb.UVCControl
 import com.serenegiant.opengl.renderer.MirrorMode
+import com.serenegiant.usb.Size
+import com.serenegiant.usb.UVCControl
+import com.serenegiant.widget.AspectRatioSurfaceView
+import android.text.TextUtils;
+
 
 const val TAG = "UVCCameraView"
 
@@ -22,6 +28,14 @@ class UVCCameraView(context: Context) : FrameLayout(context) {
   companion object {
     private const val DEBUG = true
   }
+
+  private var mHandler: Handler? = null
+  private var mDialog: AlertDialog? = null
+  private var time2Scan = 0 //设置要扫描二维码的时间
+  private var MESSAGE_QR_SUCCESS = 1
+  private var SCAN_TIME = 16
+
+  private var mQRString: String? = null //二维码
 
 
   var mCameraHelper: ICameraHelper? = null
@@ -44,7 +58,24 @@ class UVCCameraView(context: Context) : FrameLayout(context) {
       }
 
       override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
-        Toast.makeText(reactContext, "surfaceChanged", Toast.LENGTH_SHORT).show();
+        time2Scan++
+        //从TextureView获得　Bitmap
+        val bitmap = (mCameraViewMain as TextureView).bitmap
+        if (time2Scan > SCAN_TIME) {
+          time2Scan = 0
+          mHandler!!.post { //识别二维码／条形码
+            CodeUtils.analyzeBitmap(bitmap, object : CodeUtils.AnalyzeCallback {
+              override fun onAnalyzeSuccess(mQRString: Bitmap, result: String) {
+                Log.w(TAG, "二维码解析结果: $result")
+                mHandler!!.sendEmptyMessage(MESSAGE_QR_SUCCESS)
+              }
+              override
+              fun onAnalyzeFailed() {
+                Log.w(TAG, "二维码有误")
+              }
+            })
+          }
+        }
       }
 
       override fun surfaceDestroyed(holder: SurfaceHolder) {
@@ -52,9 +83,34 @@ class UVCCameraView(context: Context) : FrameLayout(context) {
         mCameraHelper?.removeSurface(holder.surface)
         clearCameraHelper()
       }
+
+
+
     })
     addView(mCameraViewMain)
 
+  }
+
+  private fun initHandler() {
+    mHandler = object : Handler() {
+      override
+      fun handleMessage(msg: Message) {
+        when (msg.what) {
+          MESSAGE_QR_SUCCESS -> {
+            Toast.makeText(reactContext, "Scan QR Code", Toast.LENGTH_SHORT).show()
+            if (!TextUtils.isEmpty(mQRString)) {
+              if (mDialog != null) {
+                if (mDialog!!.isShowing) {
+                  return
+                }
+              }
+              mDialog = AlertDialog.Builder(reactContext).setTitle("扫描结果")
+                .setMessage(mQRString).setPositiveButton("确定", null).show()
+            }
+          }
+        }
+      }
+    }
   }
 
   private val mStateListener: ICameraHelper.StateCallback = object : ICameraHelper.StateCallback {
@@ -86,19 +142,21 @@ class UVCCameraView(context: Context) : FrameLayout(context) {
         size.width = width;
         size.height = height;
         size.fps = 25;
-        Toast.makeText(reactContext, "${size.width}x${size.height},type:${size.type}, fps:${size.fps}", Toast.LENGTH_SHORT).show()
+        // Toast.makeText(reactContext, "${size.width}x${size.height},type:${size.type}, fps:${size.fps}", Toast.LENGTH_SHORT).show()
         Log.d(TAG, "previewSize: $size")
         previewSize = size
         mCameraViewMain.setAspectRatio(size.width, size.height)
         var control: UVCControl = mCameraHelper!!.uvcControl
         control.zoomRelative = 500;
+        control.focusAuto = true;
 
+        initHandler()
         startPreview()
         if(mCameraHelper!=null){
           try{
             mCameraHelper?.previewConfig = mCameraHelper?.previewConfig?.setRotation(180%360);
           } catch(e:Exception){
-            Toast.makeText(reactContext, "rotate camera error: $width, $height", Toast.LENGTH_SHORT).show()
+            // Toast.makeText(reactContext, "rotate camera error: $width, $height", Toast.LENGTH_SHORT).show()
           }
         }
         addSurface(mCameraViewMain.holder.surface, false)
@@ -109,14 +167,14 @@ class UVCCameraView(context: Context) : FrameLayout(context) {
     //   if (DEBUG) Log.v(TAG, "onCameraOpen:")
     //   mCameraHelper?.run {
     //     mCameraViewMain.setRotation(180f)
-       
+
     //     val portraitSizeList = ArrayList<Size>()
     //     for (size in supportedSizeList) {
     //       // if (size.width < size.height) {
     //         portraitSizeList.add(size)
     //       // }
     //     }
-       
+
     //     Log.d(TAG, "portraitSizeList: $portraitSizeList")
     //     val size = portraitSizeList[0]
     //     mCameraViewMain.setAspectRatio(size.width, size.height)
@@ -125,7 +183,7 @@ class UVCCameraView(context: Context) : FrameLayout(context) {
     //     startPreview()
 
     //     addSurface(mCameraViewMain.holder.surface, false)
-    
+
     //      val videoCaptureConfig = getVideoCaptureConfig()
 
     //     if (videoCaptureConfig != null) {
@@ -194,22 +252,6 @@ class UVCCameraView(context: Context) : FrameLayout(context) {
     // control.zoomAbsolute = 500;
     // control.focusAuto = true;
   }
-
-  // fun openCamera() {
-  //   mCameraHelper?.run {
-  //     if (deviceList != null && deviceList.size > 0) {
-  //       if( deviceList.size > 1) {
-  //         selectDevice(deviceList[1])
-  //       } else {
-  //         selectDevice(deviceList[0])
-  //       }
-  //     }else{
-  //       //use default camera
-  //       selectDevice(null)
-  //     }
-  //   }
-  // }
-
 fun updateAspectRatio(width: Int, height: Int) {
     Toast.makeText(reactContext, "$width X $height", Toast.LENGTH_SHORT).show();
    //set the values to SharedPreferences
@@ -223,7 +265,7 @@ fun updateAspectRatio(width: Int, height: Int) {
     }
 
 }
- 
+
   fun closeCamera() {
     mCameraHelper?.closeCamera()
   }
