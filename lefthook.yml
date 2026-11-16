@@ -2,15 +2,15 @@ pre-commit:
   parallel: true
   commands:
     lint:
-      files: git diff --name-only @{push}
+      files: git diff --name-only --diff-filter=ACMR @{push}
       glob: "*.{js,ts,jsx,tsx}"
-      run: npx eslint {files}
+      run: pnpm exec eslint {files}
     types:
-      files: git diff --name-only @{push}
+      files: git diff --name-only --diff-filter=ACMR @{push}
       glob: "*.{js,ts, jsx, tsx}"
-      run: npx tsc --noEmit
+      run: pnpm exec tsc --noEmit
 commit-msg:
   parallel: true
   commands:
     commitlint:
-      run: npx commitlint --edit
+      run: pnpm exec commitlint --edit
