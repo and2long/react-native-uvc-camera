@@ -14,7 +14,7 @@ pnpm --dir example install
 pnpm install
 ```
 
-Use Node.js 18 (see `.nvmrc`) and the pnpm version pinned in `package.json`. Commit both `pnpm-lock.yaml` files when updating dependencies.
+Use Node.js 24 (see `.nvmrc`) and the pnpm version pinned in `package.json`. Commit both `pnpm-lock.yaml` files when updating dependencies.
 
 While developing, you can run the [example app](/example/) to test your changes. Any changes you make in your library's JavaScript code will be reflected in the example app without a rebuild. If you change any native code, then you'll need to rebuild the example app.
 
