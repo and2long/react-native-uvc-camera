@@ -8,6 +8,8 @@ runs:
       uses: actions/setup-node@v5
       with:
         node-version-file: .nvmrc
+        # pnpm is enabled below; its store is cached in a separate step.
+        package-manager-cache: false
 
     - name: Enable Corepack
       run: |
