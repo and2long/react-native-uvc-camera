@@ -3,7 +3,7 @@ import {
   NativeModules,
   findNodeHandle,
   requireNativeComponent,
-  type NativeMethods,
+  type HostInstance,
 } from 'react-native';
 import type { UVCCameraProps } from './UVCCameraProps';
 import type { PhotoFile } from './PhotoFile';
@@ -18,19 +18,22 @@ const ComponentName = 'UVCCameraView';
 type NativeUVCCameraViewProps = UVCCameraProps;
 const NativeUVCCameraView =
   requireNativeComponent<NativeUVCCameraViewProps>(ComponentName);
-type RefType = React.Component<NativeUVCCameraViewProps> &
-  Readonly<NativeMethods>;
-
 export class UVCCamera extends React.PureComponent<UVCCameraProps> {
-  private readonly ref: React.RefObject<RefType>;
+  private readonly ref: React.RefObject<HostInstance | null>;
 
   constructor(props: UVCCameraProps) {
     super(props);
-    this.ref = React.createRef<RefType>();
+    this.ref = React.createRef<HostInstance>();
   }
 
-  private get handle(): number | null {
-    return findNodeHandle(this.ref.current);
+  private get handle(): number {
+    const handle = findNodeHandle(this.ref.current);
+    if (handle == null) {
+      throw new Error(
+        'Camera view must be mounted before calling camera methods.'
+      );
+    }
+    return handle;
   }
 
   public render(): React.ReactNode {

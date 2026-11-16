@@ -10,8 +10,9 @@ import com.uvccamera.utils.withPromise
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.cancel
 
-class UVCCameraViewModule(reactContext: ReactApplicationContext?) :
+class UVCCameraViewModule(reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext) {
   private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
@@ -20,7 +21,7 @@ class UVCCameraViewModule(reactContext: ReactApplicationContext?) :
   private fun findCameraView(viewId: Int): UVCCameraView {
     Log.d(TAG, "Finding view $viewId...")
     val view = if (reactApplicationContext != null) {
-      UIManagerHelper.getUIManager(reactApplicationContext, viewId)
+      UIManagerHelper.getUIManagerForReactTag(reactApplicationContext, viewId)
         ?.resolveView(viewId) as UVCCameraView?
     } else null
     Log.d(
@@ -31,15 +32,23 @@ class UVCCameraViewModule(reactContext: ReactApplicationContext?) :
   }
 
   @ReactMethod
-  fun openCamera(viewTag: Int) {
-    val view = findCameraView(viewTag)
-    view.openCamera()
+  fun openCamera(viewTag: Int, promise: Promise) {
+    coroutineScope.launch {
+      withPromise(promise) {
+        findCameraView(viewTag).openCamera()
+        null
+      }
+    }
   }
 
   @ReactMethod
-  fun closeCamera(viewTag: Int) {
-    val view = findCameraView(viewTag)
-    view.closeCamera()
+  fun closeCamera(viewTag: Int, promise: Promise) {
+    coroutineScope.launch {
+      withPromise(promise) {
+        findCameraView(viewTag).closeCamera()
+        null
+      }
+    }
   }
 
   @ReactMethod
@@ -50,5 +59,10 @@ class UVCCameraViewModule(reactContext: ReactApplicationContext?) :
         view.takePhoto()
       }
     }
+  }
+
+  override fun invalidate() {
+    coroutineScope.cancel()
+    super.invalidate()
   }
 }

@@ -32,7 +32,6 @@ class UVCCameraView(context: Context) : FrameLayout(context) {
     mCameraViewMain.holder.addCallback(object : SurfaceHolder.Callback {
       override fun surfaceCreated(holder: SurfaceHolder) {
         Log.d(TAG, "surfaceCreated() called with: holder = $holder")
-        mCameraHelper?.addSurface(holder.surface, false)
         initCameraHelper()
       }
 
@@ -70,7 +69,7 @@ class UVCCameraView(context: Context) : FrameLayout(context) {
           }
         }
         Log.d(TAG, "portraitSizeList: $portraitSizeList")
-        val size = portraitSizeList[0]
+        val size = portraitSizeList.firstOrNull() ?: supportedSizeList.firstOrNull() ?: return@run
         Log.d(TAG, "previewSize: $size")
         previewSize = size
         startPreview()
@@ -109,7 +108,7 @@ class UVCCameraView(context: Context) : FrameLayout(context) {
     }
   }
 
-  private fun clearCameraHelper() {
+  fun clearCameraHelper() {
     if (DEBUG) Log.d(TAG, "clearCameraHelper:")
     mCameraHelper?.release()
     mCameraHelper = null

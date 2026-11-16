@@ -16,6 +16,9 @@ pnpm install
 
 Use Node.js 24 (see `.nvmrc`) and the pnpm version pinned in `package.json`. Commit both `pnpm-lock.yaml` files when updating dependencies.
 
+For Android, use JDK 17, SDK Platform / Build Tools 37, and NDK 27.1.12297006.
+The example targets Android 17 (API 37), requires API 24 or newer, and runs React Native 0.88.1 with the New Architecture enabled.
+
 While developing, you can run the [example app](/example/) to test your changes. Any changes you make in your library's JavaScript code will be reflected in the example app without a rebuild. If you change any native code, then you'll need to rebuild the example app.
 
 To start the packager:

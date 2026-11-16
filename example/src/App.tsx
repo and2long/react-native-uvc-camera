@@ -1,34 +1,48 @@
 import * as React from 'react';
 
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useRef } from 'react';
-import { Button, Dimensions, Image, StyleSheet, View } from 'react-native';
+import {
+  createNativeStackNavigator,
+  type NativeStackNavigationProp,
+} from '@react-navigation/native-stack';
+import { useEffect, useRef } from 'react';
+import {
+  Button,
+  Image,
+  PermissionsAndroid,
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { UVCCamera } from '../../src/UVCCamera';
 
-const Stack = createNativeStackNavigator();
-
-const windowWidth = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height;
+type StackParamList = {
+  HomePage: undefined;
+  CameraPage: undefined;
+};
+const Stack = createNativeStackNavigator<StackParamList>();
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="HomePage">
-        <Stack.Screen name="HomePage" component={HomePage} />
-        <Stack.Screen name="CameraPage" component={CameraPage} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="HomePage">
+          <Stack.Screen name="HomePage" component={HomePage} />
+          <Stack.Screen name="CameraPage" component={CameraPage} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 }
 
 const HomePage = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<StackParamList>>();
   return (
     <View style={styles.root}>
       <Button
         title="Open CameraView"
-        // @ts-ignore
         onPress={() => navigation.navigate('CameraPage')}
       />
     </View>
@@ -38,10 +52,42 @@ const HomePage = () => {
 const CameraPage = () => {
   const camera = useRef<UVCCamera>(null);
   const [picPath, setPicPath] = React.useState<string>();
+  const [permissionGranted, setPermissionGranted] = React.useState(false);
+  const [permissionError, setPermissionError] = React.useState<string>();
+
+  useEffect(() => {
+    let active = true;
+    if (Platform.OS !== 'android') {
+      setPermissionError('USB camera support is available on Android.');
+      return;
+    }
+    PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.CAMERA)
+      .then((result) => {
+        if (active) {
+          setPermissionGranted(result === PermissionsAndroid.RESULTS.GRANTED);
+          if (result !== PermissionsAndroid.RESULTS.GRANTED) {
+            setPermissionError(
+              'Camera permission is required to use a USB camera.'
+            );
+          }
+        }
+      })
+      .catch((error: Error) => {
+        if (active) {
+          setPermissionError(error.message);
+        }
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const takePhoto = async () => {
     try {
-      const photo = await camera.current!!.takePhoto();
+      const photo = await camera.current?.takePhoto();
+      if (!photo) {
+        return;
+      }
       setPicPath(photo.path);
       console.log('photo', photo);
     } catch (error) {
@@ -51,21 +97,31 @@ const CameraPage = () => {
 
   return (
     <View style={styles.root}>
-      <UVCCamera ref={camera} style={styles.cameraView} />
+      {permissionGranted ? (
+        <UVCCamera ref={camera} style={styles.cameraView} />
+      ) : (
+        <Text>{permissionError ?? 'Requesting camera permission…'}</Text>
+      )}
       <View style={styles.controlBar}>
         <Button
           title="Open Camera"
+          disabled={!permissionGranted}
           onPress={() => camera.current?.openCamera()}
         />
         <Button
           title="Close Camera"
+          disabled={!permissionGranted}
           onPress={() => camera.current?.closeCamera()}
         />
-        <Button title="Take Photo" onPress={takePhoto} />
+        <Button
+          title="Take Photo"
+          onPress={takePhoto}
+          disabled={!permissionGranted}
+        />
       </View>
       {picPath && (
         <Image
-          source={{ uri: `file:///${picPath}` }}
+          source={{ uri: `file://${picPath}` }}
           style={styles.pic}
           resizeMode="contain"
         />
@@ -81,8 +137,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   cameraView: {
-    width: windowWidth,
-    height: windowHeight,
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
   },
   controlBar: {
     position: 'absolute',

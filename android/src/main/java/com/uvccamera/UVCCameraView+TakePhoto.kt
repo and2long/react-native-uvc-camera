@@ -1,28 +1,28 @@
 package com.uvccamera
 
-import android.os.Environment
 import android.util.Log
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableMap
-import com.herohan.uvcapp.ImageCapture
-import com.serenegiant.utils.FileUtils
-import com.serenegiant.utils.UriHelper
+import com.herohan.uvcapp.IImageCapture
+import java.io.File
 import kotlinx.coroutines.coroutineScope
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 suspend inline fun UVCCameraView.takePicture() = suspendCoroutine { cont ->
-  val file = FileUtils.getCaptureFile(context, Environment.DIRECTORY_DCIM, ".jpg")
-  val options = ImageCapture.OutputFileOptions.Builder(file).build()
+  // App-private cache works with scoped storage without media/storage permissions.
+  val file = File.createTempFile("uvc-", ".jpg", context.cacheDir)
+  val options = IImageCapture.OutputFileOptions.Builder(file).build()
   this.mCameraHelper!!.takePicture(
     options,
-    object : ImageCapture.OnImageCaptureCallback {
-      override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-        cont.resume(UriHelper.getPath(context, outputFileResults.savedUri)!!)
+    object : IImageCapture.OnImageCaptureCallback {
+      override fun onImageSaved(outputFileResults: IImageCapture.OutputFileResults) {
+        cont.resume(file.absolutePath)
       }
 
       override fun onError(imageCaptureError: Int, message: String, cause: Throwable?) {
+        file.delete()
         cont.resumeWithException(Exception(message))
       }
     }
