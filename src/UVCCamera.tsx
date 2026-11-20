@@ -3,7 +3,6 @@ import {
   NativeModules,
   findNodeHandle,
   requireNativeComponent,
-  type HostInstance,
 } from 'react-native';
 import type { UVCCameraProps } from './UVCCameraProps';
 import type { PhotoFile } from './PhotoFile';
@@ -19,12 +18,8 @@ type NativeUVCCameraViewProps = UVCCameraProps;
 const NativeUVCCameraView =
   requireNativeComponent<NativeUVCCameraViewProps>(ComponentName);
 export class UVCCamera extends React.PureComponent<UVCCameraProps> {
-  private readonly ref: React.RefObject<HostInstance | null>;
-
-  constructor(props: UVCCameraProps) {
-    super(props);
-    this.ref = React.createRef<HostInstance>();
-  }
+  private readonly ref =
+    React.createRef<React.ElementRef<typeof NativeUVCCameraView>>();
 
   private get handle(): number {
     const handle = findNodeHandle(this.ref.current);

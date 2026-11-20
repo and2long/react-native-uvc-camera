@@ -8,7 +8,6 @@ import android.widget.FrameLayout
 import com.facebook.react.bridge.ReactContext
 import com.herohan.uvcapp.CameraHelper
 import com.herohan.uvcapp.ICameraHelper
-import com.serenegiant.usb.Size
 import com.serenegiant.widget.AspectRatioSurfaceView
 
 const val TAG = "UVCCameraView"
@@ -62,18 +61,12 @@ class UVCCameraView(context: Context) : FrameLayout(context) {
     override fun onCameraOpen(device: UsbDevice) {
       if (DEBUG) Log.v(TAG, "onCameraOpen:")
       mCameraHelper?.run {
-        val portraitSizeList = ArrayList<Size>()
-        for (size in supportedSizeList) {
-          if (size.width < size.height) {
-            portraitSizeList.add(size)
-          }
-        }
-        Log.d(TAG, "portraitSizeList: $portraitSizeList")
-        val size = portraitSizeList.firstOrNull() ?: supportedSizeList.firstOrNull() ?: return@run
+        val sizes = supportedSizeList.orEmpty()
+        val size = sizes.firstOrNull { it.width < it.height } ?: sizes.firstOrNull() ?: return@run
         Log.d(TAG, "previewSize: $size")
         previewSize = size
         startPreview()
-        mCameraViewMain.setAspectRatio(previewSize.width, previewSize.height)
+        mCameraViewMain.setAspectRatio(size.width, size.height)
         addSurface(mCameraViewMain.holder.surface, false)
       }
     }
