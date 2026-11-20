@@ -2,21 +2,13 @@
 
 UVC Camera component for React Native.
 
-**Works only on Android!**
-
+**Android only.**
 
 This is a wrapper for the [UVCAndroid](https://github.com/shiyinghan/UVCAndroid) library.
 
-## Requirements
-
-- React Native 0.88 with React 19.3 (the example uses RN 0.88.1).
-- Android 7.0 / API 24 or newer, with USB host support and a UVC camera.
-- Android compile/target SDK 37 (Android 17), JDK 17, and Node.js 24 for development.
-- UVCAndroid 1.0.13 is included by the native library.
-
-The native view and module use React Native's interoperability layer with the New Architecture enabled.
-
 ## Installation
+
+To install the published package:
 
 ```sh
 npm install @and2long/react-native-uvc-camera
@@ -24,32 +16,78 @@ npm install @and2long/react-native-uvc-camera
 
 ## Usage
 
-Declare `android.permission.CAMERA` and request it with `PermissionsAndroid.request`
-before mounting the camera view. Android also asks for permission to access the USB device.
+The library declares `android.permission.CAMERA` in its Android manifest. Request
+that permission at runtime before rendering `UVCCamera`. Connect a UVC camera to
+your Android device and accept the USB access prompt when Android shows it. The
+view starts the preview automatically when the USB camera opens.
 
-```ts
-import { UVCCamera } from "@and2long/react-native-uvc-camera";
+```tsx
+import { useRef, useState } from 'react';
+import { Button, Image, PermissionsAndroid, Text, View } from 'react-native';
+import { UVCCamera } from '@and2long/react-native-uvc-camera';
 
-// ...
-const camera = useRef<UVCCamera>(null);
+export default function CameraScreen() {
+  const camera = useRef<UVCCamera>(null);
+  const [granted, setGranted] = useState(false);
+  const [photoUri, setPhotoUri] = useState<string>();
+  const [error, setError] = useState('');
 
-<UVCCamera ref={camera} style={styles.cameraView} />
+  async function requestPermission() {
+    setError('');
+    try {
+      const result = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.CAMERA
+      );
+      if (result === PermissionsAndroid.RESULTS.GRANTED) {
+        setGranted(true);
+      } else {
+        setError('Allow camera access to use the USB camera.');
+      }
+    } catch {
+      setError('Could not request camera permission.');
+    }
+  }
 
-const styles = StyleSheet.create({
-  cameraView: {
-    width: 200,
-    height: 200,
-  },
-});
+  async function takePhoto() {
+    if (!camera.current) return;
+
+    setError('');
+    try {
+      const photo = await camera.current.takePhoto();
+      setPhotoUri(`file://${photo.path}`);
+    } catch {
+      setError('Wait for the camera preview, then try taking the photo again.');
+    }
+  }
+
+  return (
+    <View>
+      {granted ? (
+        <>
+          <UVCCamera ref={camera} style={{ width: 320, height: 240 }} />
+          <Button title="Take photo" onPress={takePhoto} />
+        </>
+      ) : (
+        <Button title="Enable camera" onPress={requestPermission} />
+      )}
+      {error ? <Text>{error}</Text> : null}
+      {photoUri && (
+        <Image source={{ uri: photoUri }} style={{ width: 160, height: 120 }} />
+      )}
+    </View>
+  );
+}
 ```
 
-### Take photo
-```
-const photo = await camera.current?.takePhoto();
-```
+Tap **Take photo** once the preview is visible. `takePhoto()` returns `{ path }`,
+the absolute path to a JPEG in the app's private cache. Use a `file://` URI to
+display the image, and copy the file to persistent storage if you need to keep it.
+Capture works with the camera and USB permissions alone.
 
-Photos are saved to the app's private cache. Copy them to persistent storage if they
-need to survive cache cleanup; no shared-storage permission is needed for capture.
+The mounted camera ref also exposes `openCamera()` and `closeCamera()` for
+manually controlling the preview.
+
+To try the library directly from this checkout, see the [Android example app](example/README.md).
 
 ## R8 / ProGuard
 If you are using R8 the shrinking and obfuscation rules are included automatically.
